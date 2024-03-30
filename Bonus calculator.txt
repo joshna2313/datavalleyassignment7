@@ -1,0 +1,54 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class DepartmentDAO {
+
+    private Connection getConnection() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/departments";
+        String username = "your_username";
+        String password = "your_password";
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public void saveDepartment(Department department) {
+        String sql = "INSERT INTO department (id, name) VALUES (?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, department.getId());
+            preparedStatement.setString(2, department.getName());
+            preparedStatement.executeUpdate();
+            System.out.println("Department saved successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error saving department: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        DepartmentDAO departmentDAO = new DepartmentDAO();
+
+        // Example usage
+        Department department = new Department(1, "Engineering");
+        departmentDAO.saveDepartment(department);
+    }
+}
+
+class Department {
+    private int id;
+    private String name;
+
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
